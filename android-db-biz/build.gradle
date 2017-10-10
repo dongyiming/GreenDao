@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+
+//1，声明添加的插件类型
+apply plugin: 'org.greenrobot.greendao'
+
+//2,设置脚本的运行环境(如果用在app启动模块，直接加3,4步,在lib模块整个需要加进去)
+buildscript {
+
+    repositories {
+        //3，支持java 依赖库管理（maven/ivy）,用于项目的依赖。
+        mavenCentral() // add repository
+    }
+
+    dependencies {
+        //4，依赖包的定义。支持maven/ivy，远程，本地库，也支持单文件
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
+    }
+}
+
+//6，自定义Greendao版本和生成路径
+greendao {
+    //数据库版本号，数据库修改后这里一定要记得修改，否则会报错no such table
+    schemaVersion 16
+    //通过gradle插件生成的数据库相关文件的包名，默认为你的entity所在的包名
+    daoPackage 'com.example.android_db_biz.greendao'
+    //这就是我们上面说到的自定义生成数据库文件的目录了，可以将生成的文件放到我们的java目录中，而不是build中，这样就不用额外的设置资源目录了
+    targetGenDir 'src/main/java'
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    //5，添加依赖库
+    compile 'org.greenrobot:greendao:3.2.2'
+    testCompile 'junit:junit:4.12'
+}
